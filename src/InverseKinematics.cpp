@@ -201,10 +201,10 @@ int computeRearLegIK(double * rearLegComputedAngles,
 #endif
     if (alpha <  90 &&
         alpha > -90 &&
-        beta  <  90 &&
-        beta  > -75 &&
-        gamma <  51 &&
-        gamma > -90){
+        beta  <  0 &&
+        beta  > -180 &&
+        gamma <  100 &&
+        gamma > 0){
       double score = 1000;
       score -= abs(alpha - rearLegActualAngles[0]);
       score -= abs(beta  - rearLegActualAngles[1]);
@@ -243,7 +243,9 @@ int main(int argc, char ** argv){
   double computedRearAngles[3];
   computeRearLegIK(computedRearAngles,
                    actualRearAngles,
-                   REAR_FOOT_DX,
-                   FEMUR_LENGTH + TIBIA_LENGTH + REAR_FOOT_DZ);
+                   22.0,
+                   180);
+//                   REAR_FOOT_DX,
+//                   FEMUR_LENGTH + TIBIA_LENGTH + REAR_FOOT_DZ);
 }
 #endif
