@@ -1,7 +1,7 @@
 # Project targets
 # Defines here your cpp source files
 # Ex : main.cpp test.cpp ...
-SRC_FILES = main.cpp Interpolation.cpp RearLeg.cpp
+SRC_FILES = $(wildcard *.cpp)
 OBJ_FILES = $(addprefix $(BUILD_PATH)/,$(SRC_FILES:.cpp=.o))
 
 # Uncomment to disable robot campus commands

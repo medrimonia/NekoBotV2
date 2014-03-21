@@ -14,6 +14,10 @@ TERMINAL_PARAMETER_DOUBLE(period, "Period length", 5.0);
 
 TERMINAL_PARAMETER_BOOL(freeMove, "Disable", true);
 
+//rear IK default
+TERMINAL_PARAMETER_DOUBLE(initRearX, "Init X of rear foots",   22.0);
+TERMINAL_PARAMETER_DOUBLE(initRearZ, "Init Z of rear foots",  200.0);
+
 // Init Pos
 TERMINAL_PARAMETER_DOUBLE(initRearAngle1, "Init angle of rear 1",   0.0);
 TERMINAL_PARAMETER_DOUBLE(initRearAngle2, "Init angle of rear 2",  45.0);
@@ -90,12 +94,8 @@ void tick()
     leftRearLeg.enable();
     rightRearLeg.enable();
   }
-  double src[4], tar[4], curr[4];
-  getInitRearLeg(src);
-  getBottomRearLeg(tar);
-  linearInterpolation(curr, src, tar, 4, fmod(t, period), period);
-  leftRearLeg.setAngles(src);
-  rightRearLeg.setAngles(src);
+  leftRearLeg.setFromIK(initRearX, initRearZ);
+  rightRearLeg.setFromIK(initRearX, initRearZ);
 }
 
 /**

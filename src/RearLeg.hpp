@@ -16,10 +16,21 @@ public:
   void setFemurAngle(double a);
   void setTibiaAngle(double a);
   void setFootAngle(double a);
+  double getLatAngle();
+  double getFemurAngle();
+  double getTibiaAngle();
+  double getFootAngle();
   /* Use an array of size 4 :
    * [ lat, femur, tibia, foot]
    */
   void setAngles(double * a);
+
+  /** Compute an inverse kinematic for the rear leg according to the specified
+   * z (height from top of Femur)
+   *    and
+   * x (horizontal distance from top of Femur)
+   */
+  void setFromIK(double x, double z);
 
   void enable();
   void disable();
