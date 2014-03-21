@@ -68,14 +68,14 @@ void RearLeg::setFromIK(double x, double z)
 
 void RearLeg::enable()
 {
-  for (int i = startIndex; i <= startIndex + 4; i++) {
+  for (int i = startIndex; i < startIndex + 4; i++) {
     dxl_enable(i);
   }
 }
 
 void RearLeg::disable()
 {
-  for (int i = startIndex; i <= startIndex + 4; i++) {
+  for (int i = startIndex; i < startIndex + 4; i++) {
     dxl_disable(i);
   }
 }

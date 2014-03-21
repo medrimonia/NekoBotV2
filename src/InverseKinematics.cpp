@@ -143,12 +143,12 @@ int computeForeLegIK(double * foreLegComputedAngles,
 #endif
     if (alpha <  90 &&
         alpha > -90 &&
-        beta  <  0 &&
-        beta  >  -180){
+        beta  <  180 &&
+        beta  >  0){
       double score = 1000;
       score -= abs(alpha - foreLegActualAngles[0]);
       score -= abs(beta - foreLegActualAngles[1]);
-      if (alpha < 0) score -= 400;
+      if (alpha > 0) score -= 400;
 #ifdef DEBUG_IK
       printf("\tScore : %f\n", score);
 #endif
@@ -230,15 +230,13 @@ int computeRearLegIK(double * rearLegComputedAngles,
 
 #ifdef DEBUG_IK
 int main(int argc, char ** argv){
-  /*
 
   double actualForeAngles[2] = {0,0};
   double computedForeAngles[2];
   computeForeLegIK(computedForeAngles,
                    actualForeAngles,
                    0,
-                   150);
-  */
+                   HUMERUS_LENGTH + RADIUS_LENGTH - 0.1);
   double actualRearAngles[3] = {0};
   double computedRearAngles[3];
   computeRearLegIK(computedRearAngles,
