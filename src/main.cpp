@@ -19,8 +19,8 @@ TERMINAL_PARAMETER_BOOL(freeMove, "Disable", true);
 TERMINAL_PARAMETER_DOUBLE(initRearX, "Init X of rear foots",   22.0);
 TERMINAL_PARAMETER_DOUBLE(initRearZ, "Init Z of rear foots",  190.0);
 //fore IK default
-TERMINAL_PARAMETER_DOUBLE(initForeX, "Init X of rear foots",    0.0);
-TERMINAL_PARAMETER_DOUBLE(initForeZ, "Init Z of rear foots",  190.0);
+TERMINAL_PARAMETER_DOUBLE(initForeX, "Init X of fore foots",  -20.0);
+TERMINAL_PARAMETER_DOUBLE(initForeZ, "Init Z of fore foots",  190.0);
 
 
 RearLeg rightRearLeg ( 2, false);
@@ -76,28 +76,24 @@ void tick()
     leftRearLeg.disable();
     rightRearLeg.disable();
     leftForeLeg.disable();
-    dxl_disable(6);
-    dxl_disable(8);
-    //rightForeLeg.disable();
+    rightForeLeg.disable();
     return;    
   }
   // Enabling motors
   leftRearLeg.enable();
   rightRearLeg.enable();
   leftForeLeg.enable();
-  dxl_enable(6);
-  //dxl_enable(7);
-  dxl_enable(8);
-  //rightForeLeg.enable();
+  rightForeLeg.enable();
   // Setting Lat Angles
   leftRearLeg.setLatAngle(0);
   rightRearLeg.setLatAngle(0);
   leftForeLeg.setLatAngle(0);
+  //rightForeLeg.setLatAngle(0)// Broken servo
   // Setting Legs angles from IK
   leftRearLeg.setFromIK(initRearX, initRearZ);
   rightRearLeg.setFromIK(initRearX, initRearZ);
   leftForeLeg.setFromIK(initForeX, initForeZ);
-  //rightForeLeg.setFromIK(initForeX, initForeZ);
+  rightForeLeg.setFromIK(initForeX, initForeZ);
   //double zeros[3] = {0, 0, 0};
   //leftForeLeg.setAngles(zeros);
   //rightForeLeg.setAngles(zeros);
