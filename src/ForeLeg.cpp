@@ -5,6 +5,7 @@
 #include "InverseKinematics.hpp"
 
 void ForeLeg::setLatAngle(double a) {
+  a = inv ? a : -a;
   dxl_set_position(startIndex, a);
 }
 
@@ -19,12 +20,13 @@ void ForeLeg::setRadiusAngle(double a) {
 }
 
 double ForeLeg::getLatAngle() {
-  return dxl_get_position(startIndex);
+  double mult =  inv ? 1 : -1;
+  return mult * dxl_get_position(startIndex);
 }
 
 double ForeLeg::getHumerusAngle() {
   double mult =  inv ? -1 : 1;
-  return mult *dxl_get_position(startIndex + 1);
+  return mult * dxl_get_position(startIndex + 1);
 }
 
 double ForeLeg::getRadiusAngle() {
