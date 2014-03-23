@@ -15,5 +15,10 @@ void enableMotors();
 
 void disableMotors();
 
+void setPosture(double rearX, double rearZ, double foreX, double foreZ,
+                double latAngle);
+
+void setUniformLat(double latAngle);
+
 
 #endif//NEKOBOT_MOTORS_HPP

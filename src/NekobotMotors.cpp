@@ -7,6 +7,19 @@ RearLeg leftRearLeg(12, true);
 ForeLeg rightForeLeg ( 6, false);
 ForeLeg leftForeLeg(16, true);
 
+void setPosture(double rearX, double rearZ, double foreX, double foreZ,
+                double latAngle)
+{
+  leftRearLeg.setFromIK (rearX, rearZ );
+  rightRearLeg.setFromIK(rearX, rearZ);
+  leftForeLeg.setFromIK (foreX, foreZ );
+  rightForeLeg.setFromIK(foreX, foreZ);
+  leftRearLeg.setLatAngle (latAngle);
+  rightRearLeg.setLatAngle(latAngle);
+  leftForeLeg.setLatAngle (latAngle);
+  rightForeLeg.setLatAngle(latAngle);
+}
+
 void initMotors()
 {
   dxl_init();
@@ -54,4 +67,12 @@ void disableMotors()
   rightRearLeg.disable();
   leftForeLeg.disable();
   rightForeLeg.disable();
+}
+
+void setUniformLat(double latAngle)
+{
+  leftRearLeg.setLatAngle (latAngle);
+  rightRearLeg.setLatAngle(latAngle);
+  leftForeLeg.setLatAngle (latAngle);
+  rightForeLeg.setLatAngle(latAngle);
 }

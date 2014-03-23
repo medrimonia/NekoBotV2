@@ -80,17 +80,17 @@ void move(double t,
   rightRearLat = movePosLat(staticLatAngle, time3, latStep   );
   leftForeX    = movePosX  (staticForeX   , time4, leftStep  );
   leftForeZ    = movePosZ  (staticForeZ   , time4, stepHeight);
-  leftForeLat  = movePosLat(staticLatAngle, time4, latStep   );
+  leftForeLat  = movePosLat(staticLatAngle, time4, -latStep  );
   rightForeX   = movePosX  (staticForeX   , time2, rightStep );
   rightForeZ   = movePosZ  (staticForeZ   , time2, stepHeight);
-  rightForeLat = movePosLat(staticLatAngle, time2, latStep   );
+  rightForeLat = movePosLat(staticLatAngle, time2, -latStep  );
   // Applying positions
-  leftRearLeg.setFromIK(leftRearX, leftRearZ);
+  leftRearLeg.setFromIK (leftRearX , leftRearZ );
   rightRearLeg.setFromIK(rightRearX, rightRearZ);
-  leftForeLeg.setFromIK(leftForeX, leftForeZ);
+  leftForeLeg.setFromIK (leftForeX , leftForeZ );
   rightForeLeg.setFromIK(rightForeX, rightForeZ);
-  leftRearLeg.setLatAngle(leftRearLat);
+  leftRearLeg.setLatAngle (leftRearLat );
   rightRearLeg.setLatAngle(rightRearLat);
-  leftForeLeg.setLatAngle(leftForeLat);
+  leftForeLeg.setLatAngle (leftForeLat );
   rightForeLeg.setLatAngle(rightForeLat);
 }
