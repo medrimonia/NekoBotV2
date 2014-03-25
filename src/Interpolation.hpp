@@ -3,7 +3,7 @@
 
 
 double linearInterpolation(double src, double tar,
-                           double elapsedTime, double transitionTime);
+                           double elapsedTime, double transitionTime = 1.0);
 
 /**
  * save the linear interpolation from src to tar in dst array
@@ -14,6 +14,6 @@ void linearInterpolation(double * dst,
                          double * tar,
                          int n,
                          double elapsedTime,
-                         double transitionTime);
+                         double transitionTime = 1.0);
 
 #endif//INTERPOLATION_HPP

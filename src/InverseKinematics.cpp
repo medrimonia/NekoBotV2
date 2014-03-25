@@ -9,7 +9,9 @@
 //#define DEBUG_IK
 
 #define HUMERUS_LENGTH   84.92
-#define RADIUS_LENGTH   110.88
+#define RADIUS_LENGTH   108.29
+
+#define RADIUS_ANGLE_OFFSET 6.49//Degrees
 
 //TODO check
 #define FEMUR_LENGTH     72.6
@@ -135,7 +137,8 @@ int computeForeLegIK(double * foreLegComputedAngles,
   double solutionChoosen = -1;
   for (int solutionNo = 0; solutionNo < nbSolutions; solutionNo++){
     double alpha = normalizeAngle(solutions[solutionNo * 2]);
-    double beta  = normalizeAngle(solutions[solutionNo * 2 + 1]);
+    double beta  = normalizeAngle(solutions[solutionNo * 2 + 1]
+                                  + RADIUS_ANGLE_OFFSET);
 #ifdef DEBUG_IK
     printf("Solution %d:\n", solutionNo);
     printf("\tAlpha : %f\n", alpha);
@@ -203,7 +206,7 @@ int computeRearLegIK(double * rearLegComputedAngles,
         alpha > -90 &&
         beta  <  0 &&
         beta  > -180 &&
-        gamma <  100 &&
+        gamma <  120 &&
         gamma > 0){
       double score = 1000;
       score -= abs(alpha - rearLegActualAngles[0]);
