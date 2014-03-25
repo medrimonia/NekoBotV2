@@ -21,6 +21,10 @@ TERMINAL_PARAMETER_DOUBLE(initRearZ, "Init Z of rear foots",  150.0);
 //fore IK default
 TERMINAL_PARAMETER_DOUBLE(initForeX, "Init X of fore foots",  -20.0);
 TERMINAL_PARAMETER_DOUBLE(initForeZ, "Init Z of fore foots",  150.0);
+//Using Pitch + avgZ
+TERMINAL_PARAMETER_DOUBLE(initPitch,"Init pitch of robot",  0.0);
+TERMINAL_PARAMETER_DOUBLE(initAvgZ, "Init avg Z",  150.0);
+
 
 TERMINAL_PARAMETER_DOUBLE(initLatAngle, "Init lat angle of legs", 10.0);
 
@@ -65,7 +69,8 @@ void tick()
   if (prevState == 0) enableMotors();
   switch(state) {
   case INIT_STATE: {
-    setPosture(initRearX, initRearZ, initForeX,initForeZ, initLatAngle);
+    //setPosture(initRearX, initRearZ, initForeX,initForeZ, initLatAngle);
+    setAllFromIK(initForeX, initRearX, initAvgZ, initPitch);
     break;
   }
   case WALK_STATE: {

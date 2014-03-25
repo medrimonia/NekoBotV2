@@ -67,14 +67,14 @@ void RearLeg::setAngles(double * angles)
   setFootAngle(angles[3]);
 }
 
-void RearLeg::setFromIK(double x, double z)
+void RearLeg::setFromIK(double x, double z, double robotPitch)
 {
   double previousValues[3];
   previousValues[0] = getFemurAngle();
   previousValues[1] = getTibiaAngle();
   previousValues[2] = getFootAngle();
   double wishedValues[3];
-  if (computeRearLegIK(wishedValues, previousValues, x, z) == -1) {
+  if (computeRearLegIK(wishedValues, previousValues, x, z, robotPitch) == -1) {
     // If IK failed, do not set angles
     return;
   }

@@ -1,6 +1,14 @@
 #ifndef INVERSE_KINEMATICS_HPP
 #define INVERSE_KINEMATICS_HPP
 
+/**
+ * robotPitch is an elevation angle :
+ * 0 -> same z for rearLegs and forLegs
+ * + -> nose pointing down
+ * - -> nose pointing up
+ */
+
+
 /* Compute an inverse kinematic for the fore leg according to the specified x
  * and z.
  * Result is placed in the first given array and if multiple solutions are
@@ -9,7 +17,8 @@
 int computeForeLegIK(double * foreLegComputedAngles,
                      double * foreLegActualAngles,
                      double x,
-                     double z);
+                     double z,
+                     double robotPitch = 0);
 
 /* Compute an inverse kinematic for the rear leg according to the specified x
  * and z.
@@ -19,5 +28,7 @@ int computeForeLegIK(double * foreLegComputedAngles,
 int computeRearLegIK(double * rearLegComputedAngles,
                      double * rearLegActualAngles,
                      double x,
-                     double z);
+                     double z,
+                     double robotPitch = 0);
+
 #endif//INVERSE_KINEMATICS_HPP

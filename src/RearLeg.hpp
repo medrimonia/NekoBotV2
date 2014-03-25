@@ -37,7 +37,7 @@ public:
    *    and
    * x (horizontal distance from top of Femur)
    */
-  void setFromIK(double x, double z);
+  void setFromIK(double x, double z, double robotPitch = 0);
 
   void enable();
   void disable();

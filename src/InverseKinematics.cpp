@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "InverseKinematics.hpp"
+#include "NekobotMotors.hpp"
 #include "Utils.hpp"
 
 //#define DEBUG_IK
@@ -123,7 +124,8 @@ int computeIK(double * dst,
 int computeForeLegIK(double * foreLegComputedAngles,
                      double * foreLegActualAngles,
                      double x,
-                     double z){
+                     double z,
+                     double robotPitch){
   double solutions[4];
   int nbSolutions = computeIK(solutions,
                               x,
@@ -136,7 +138,7 @@ int computeForeLegIK(double * foreLegComputedAngles,
   double solutionBestScore = 0;
   double solutionChoosen = -1;
   for (int solutionNo = 0; solutionNo < nbSolutions; solutionNo++){
-    double alpha = normalizeAngle(solutions[solutionNo * 2]);
+    double alpha = normalizeAngle(solutions[solutionNo * 2] + robotPitch);
     double beta  = normalizeAngle(solutions[solutionNo * 2 + 1]
                                   + RADIUS_ANGLE_OFFSET);
 #ifdef DEBUG_IK
@@ -144,10 +146,10 @@ int computeForeLegIK(double * foreLegComputedAngles,
     printf("\tAlpha : %f\n", alpha);
     printf("\tBeta  : %f\n", beta);
 #endif
-    if (alpha <  90 &&
-        alpha > -90 &&
-        beta  <  180 &&
-        beta  >  0){
+    if (alpha < BACK2HUMERUS_MAX_ANGLE &&
+        alpha > BACK2HUMERUS_MIN_ANGLE &&
+        beta  < HUMERUS2RADIUS_MAX_ANGLE &&
+        beta  > HUMERUS2RADIUS_MIN_ANGLE){
       double score = 1000;
       score -= abs(alpha - foreLegActualAngles[0]);
       score -= abs(beta - foreLegActualAngles[1]);
@@ -176,7 +178,8 @@ int computeForeLegIK(double * foreLegComputedAngles,
 int computeRearLegIK(double * rearLegComputedAngles,
                      double * rearLegActualAngles,
                      double x,
-                     double z){
+                     double z,
+                     double robotPitch){
   double solutions[4];
   x = x - REAR_FOOT_DX;
   z = z - REAR_FOOT_DZ;
@@ -196,18 +199,19 @@ int computeRearLegIK(double * rearLegComputedAngles,
     double alpha = normalizeAngle(solutions[solutionNo * 2]);
     double beta  = normalizeAngle(solutions[solutionNo * 2 + 1]);
     double gamma = normalizeAngle(REAR_FOOT_ANGLE - alpha - beta);
+    alpha = normalizeAngle(alpha + robotPitch);
 #ifdef DEBUG_IK
     printf("Solution %d:\n" , solutionNo);
     printf("\tAlpha : %f\n" , alpha);
     printf("\tBeta  : %f\n" , beta);
     printf("\tGamma  : %f\n", gamma);
 #endif
-    if (alpha <  90 &&
-        alpha > -90 &&
-        beta  <  0 &&
-        beta  > -180 &&
-        gamma <  120 &&
-        gamma > 0){
+    if (alpha < BACK2FEMUR_MAX_ANGLE &&
+        alpha > BACK2FEMUR_MIN_ANGLE &&
+        beta  < FEMUR2TIBIA_MAX_ANGLE &&
+        beta  > FEMUR2TIBIA_MIN_ANGLE &&
+        gamma < TIBIA2FOOT_MAX_ANGLE &&
+        gamma > TIBIA2FOOT_MIN_ANGLE){
       double score = 1000;
       score -= abs(alpha - rearLegActualAngles[0]);
       score -= abs(beta  - rearLegActualAngles[1]);

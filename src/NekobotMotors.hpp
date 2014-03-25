@@ -37,5 +37,6 @@ void setPosture(double rearX, double rearZ, double foreX, double foreZ,
 
 void setUniformLat(double latAngle);
 
-
+void setAllFromIK(double foreX, double rearX, double avgZ,
+                  double robotPitch);
 #endif//NEKOBOT_MOTORS_HPP

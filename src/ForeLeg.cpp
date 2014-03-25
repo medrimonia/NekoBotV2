@@ -53,13 +53,13 @@ void ForeLeg::setAngles(double * angles)
   setRadiusAngle(angles[2]);
 }
 
-void ForeLeg::setFromIK(double x, double z)
+void ForeLeg::setFromIK(double x, double z, double robotPitch)
 {
   double previousValues[2];
   previousValues[0] = getHumerusAngle();
   previousValues[1] = getRadiusAngle();
   double wishedValues[2];
-  if (computeForeLegIK(wishedValues, previousValues, x, z) == -1) {
+  if (computeForeLegIK(wishedValues, previousValues, x, z, robotPitch) == -1) {
     // If IK failed, do not set angles
     return;
   }

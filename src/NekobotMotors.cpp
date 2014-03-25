@@ -1,6 +1,10 @@
+#include <cmath>
+
 #include "NekobotMotors.hpp"
 
 #include <dxl.h>
+
+#define BACK_LENGTH 200.0//TODO check!!!
 
 RearLeg rightRearLeg ( 2, false);
 RearLeg leftRearLeg(12, true);
@@ -18,6 +22,17 @@ void setPosture(double rearX, double rearZ, double foreX, double foreZ,
   rightRearLeg.setLatAngle(latAngle);
   leftForeLeg.setLatAngle (latAngle);
   rightForeLeg.setLatAngle(latAngle);
+}
+
+void setAllFromIK(double foreX, double rearX, double avgZ,
+                  double robotPitch)
+{
+  double foreZ = avgZ - sin(robotPitch * M_PI / 180) * BACK_LENGTH / 2.0;
+  double rearZ = avgZ + sin(robotPitch * M_PI / 180) * BACK_LENGTH / 2.0;
+  leftRearLeg.setFromIK (rearX, rearZ, robotPitch);
+  rightRearLeg.setFromIK(rearX, rearZ, robotPitch);
+  leftForeLeg.setFromIK (foreX, foreZ, robotPitch);
+  rightForeLeg.setFromIK(foreX, foreZ, robotPitch);
 }
 
 void initMotors()

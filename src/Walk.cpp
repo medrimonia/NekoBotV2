@@ -85,9 +85,13 @@ void move(double t,
   double leftRearZ, rightRearZ, leftForeZ, rightForeZ;
 //  double leftRearLat, rightRearLat, leftForeLat, rightForeLat;
   double leftStep, rightStep, latStep;
-  leftStep  = stepLength * forwardOrder;
-  rightStep = stepLength * forwardOrder;
-  latStep   = stepLatAmp * rotationOrder;
+  leftStep  = stepLength * forwardOrder + stepLength * rotationOrder;
+  rightStep = stepLength * forwardOrder - stepLength * rotationOrder;
+  double totalOrder = abs(forwardOrder) + abs(rotationOrder);
+  if (totalOrder > 1.0) {
+    leftStep /= totalOrder;
+    rightStep /= totalOrder;
+  }
   // Computing positions
   leftRearX    = movePosX  (staticRearX   , time1, leftStep  );
   leftRearZ    = movePosZ  (staticRearZ   , time1, stepHeight);
