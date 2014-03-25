@@ -5,8 +5,15 @@ class RearLeg {
 private:
   int startIndex;
   bool inv;
+
+  // Convert value from and to internal values
+  double externalVal(double intVal);
+  double internalVal(double extVal);
 public:
   RearLeg(int firstId, bool inverted) : startIndex(firstId), inv(inverted) {}
+
+  // set zero and associated values
+  void init();
 
   /** Lateral Angle
    * + -> leg outside

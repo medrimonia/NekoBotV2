@@ -8,6 +8,9 @@ private:
 public:
   ForeLeg(int firstId, bool inverted) : startIndex(firstId), inv(inverted) {}
 
+  // Init motors with default min, max and zero values
+  void init();
+
   /** Lateral Angle
    * + -> leg outside
    * - -> leg inside

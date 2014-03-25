@@ -3,6 +3,18 @@
 #include <dxl.h>
 
 #include "InverseKinematics.hpp"
+#include "NekobotMotors.hpp"
+
+void ForeLeg::init()
+{
+  //LAT motor disabled
+  dxl_set_zero(startIndex + 1, 0.0);
+  motSetMinMax(startIndex + 1,
+               BACK2HUMERUS_MIN_ANGLE, BACK2HUMERUS_MAX_ANGLE, inv);
+  dxl_set_zero(startIndex + 2, 0.0);
+  motSetMinMax(startIndex + 2,
+               HUMERUS2RADIUS_MIN_ANGLE, HUMERUS2RADIUS_MAX_ANGLE, inv);
+}
 
 void ForeLeg::setLatAngle(double a) {
   a = inv ? a : -a;
