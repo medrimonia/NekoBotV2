@@ -19,24 +19,24 @@ void RearLeg::init()
                TIBIA2FOOT_MIN_ANGLE, TIBIA2FOOT_MAX_ANGLE, inv);
 }
 
-void RearLeg::setLatAngle(double a) {
+void RearLeg::setLatAngle(double time, double a) {
   a = inv ? a : -a;
-  dxl_set_position(startIndex, a);
+  smoothSet(startIndex, oldLat, a, time, smoothStart, smoothingTime);
 }
 
-void RearLeg::setFemurAngle(double a) {
+void RearLeg::setFemurAngle(double time, double a) {
   a = inv ? -a : a;
-  dxl_set_position(startIndex + 1, a);
+  smoothSet(startIndex + 1, oldFemur, a, time, smoothStart, smoothingTime);
 }
 
-void RearLeg::setTibiaAngle(double a) {
+void RearLeg::setTibiaAngle(double time, double a) {
   a = inv ? -a : a;
-  dxl_set_position(startIndex + 2, a);
+  smoothSet(startIndex + 2, oldTibia, a, time, smoothStart, smoothingTime);
 }
 
-void RearLeg::setFootAngle(double a) {
+void RearLeg::setFootAngle(double time, double a) {
   a = inv ? -a : a;
-  dxl_set_position(startIndex + 3, a);
+  smoothSet(startIndex + 3, oldFoot, a, time, smoothStart, smoothingTime);
 }
 
 double RearLeg::getLatAngle() {
@@ -59,15 +59,15 @@ double RearLeg::getFootAngle() {
   return mult * dxl_get_position(startIndex + 3);
 }
 
-void RearLeg::setAngles(double * angles)
+void RearLeg::setAngles(double time, double * angles)
 {
-  setLatAngle(angles[0]);
-  setFemurAngle(angles[1]);
-  setTibiaAngle(angles[2]);
-  setFootAngle(angles[3]);
+  setLatAngle  (time, angles[0]);
+  setFemurAngle(time, angles[1]);
+  setTibiaAngle(time, angles[2]);
+  setFootAngle (time, angles[3]);
 }
 
-void RearLeg::setFromIK(double x, double z, double robotPitch)
+void RearLeg::setFromIK(double time, double x, double z, double robotPitch)
 {
   double previousValues[3];
   previousValues[0] = getFemurAngle();
@@ -78,9 +78,9 @@ void RearLeg::setFromIK(double x, double z, double robotPitch)
     // If IK failed, do not set angles
     return;
   }
-  setFemurAngle(wishedValues[0]);
-  setTibiaAngle(wishedValues[1]);
-  setFootAngle (wishedValues[2]);
+  setFemurAngle(time, wishedValues[0]);
+  setTibiaAngle(time, wishedValues[1]);
+  setFootAngle (time, wishedValues[2]);
 }
 
 void RearLeg::enable()
@@ -95,4 +95,14 @@ void RearLeg::disable()
   for (int i = startIndex; i < startIndex + 4; i++) {
     dxl_disable(i);
   }
+}
+
+void RearLeg::startSmoothing(double time, double smoothLength)
+{
+  smoothStart = time;
+  smoothingTime = smoothLength;
+  oldLat   = dxl_get_position(startIndex    );
+  oldFemur = dxl_get_position(startIndex + 1);
+  oldTibia = dxl_get_position(startIndex + 2);
+  oldFoot  = dxl_get_position(startIndex + 3);
 }

@@ -16,19 +16,19 @@ void ForeLeg::init()
                HUMERUS2RADIUS_MIN_ANGLE, HUMERUS2RADIUS_MAX_ANGLE, inv);
 }
 
-void ForeLeg::setLatAngle(double a) {
+void ForeLeg::setLatAngle(double time, double a) {
   a = inv ? a : -a;
-  dxl_set_position(startIndex, a);
+  smoothSet(startIndex, oldLat, a, time, smoothStart, smoothingTime);
 }
 
-void ForeLeg::setHumerusAngle(double a) {
+void ForeLeg::setHumerusAngle(double time, double a) {
   a = inv ? -a : a;
-  dxl_set_position(startIndex + 1, a);
+  smoothSet(startIndex + 1, oldHumerus, a, time, smoothStart, smoothingTime);
 }
 
-void ForeLeg::setRadiusAngle(double a) {
+void ForeLeg::setRadiusAngle(double time, double a) {
   a = inv ? -a : a;
-  dxl_set_position(startIndex + 2, a);
+  smoothSet(startIndex + 2, oldRadius, a, time, smoothStart, smoothingTime);
 }
 
 double ForeLeg::getLatAngle() {
@@ -46,14 +46,14 @@ double ForeLeg::getRadiusAngle() {
   return mult * dxl_get_position(startIndex + 2);
 }
 
-void ForeLeg::setAngles(double * angles)
+void ForeLeg::setAngles(double time, double * angles)
 {
-  setLatAngle(angles[0]);
-  setHumerusAngle(angles[1]);
-  setRadiusAngle(angles[2]);
+  setLatAngle    (time, angles[0]);
+  setHumerusAngle(time, angles[1]);
+  setRadiusAngle (time, angles[2]);
 }
 
-void ForeLeg::setFromIK(double x, double z, double robotPitch)
+void ForeLeg::setFromIK(double time, double x, double z, double robotPitch)
 {
   double previousValues[2];
   previousValues[0] = getHumerusAngle();
@@ -63,8 +63,8 @@ void ForeLeg::setFromIK(double x, double z, double robotPitch)
     // If IK failed, do not set angles
     return;
   }
-  setHumerusAngle(wishedValues[0]);
-  setRadiusAngle(wishedValues[1]);
+  setHumerusAngle(time, wishedValues[0]);
+  setRadiusAngle (time, wishedValues[1]);
 }
 
 void ForeLeg::enable()
@@ -79,4 +79,13 @@ void ForeLeg::disable()
   for (int i = startIndex; i < startIndex + 3; i++) {
     dxl_disable(i);
   }
+}
+
+void ForeLeg::startSmoothing(double time, double smoothLength)
+{
+  smoothStart = time;
+  smoothingTime = smoothLength;
+  oldLat     = dxl_get_position(startIndex    );
+  oldHumerus = dxl_get_position(startIndex + 1);
+  oldRadius  = dxl_get_position(startIndex + 2);
 }

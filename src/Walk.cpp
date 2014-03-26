@@ -21,6 +21,10 @@ TERMINAL_PARAMETER_DOUBLE(stepLatAmp, "Amplitude of a step (rotation)",  5.0);
 
 TERMINAL_PARAMETER_DOUBLE(walkLatOffset, "Walking lateral offset"  ,-10.0);
 
+TERMINAL_PARAMETER_INT(walkType, "Way of walking (2 legs / 1 legs)", 1);
+
+#define WALK_ONE_BY_ONE 0
+#define WALK_TWO_BY_TWO 1
 
 // For all the Pos function, time is a value in [0,1]
 
@@ -66,17 +70,24 @@ void move(double t,
   double walkingTime = fmod(t, walkPeriod) / walkPeriod;
   double staticRearZ = computeRearZ(staticAvgZ, staticPitch);
   double staticForeZ = computeForeZ(staticAvgZ, staticPitch);
-  double time1, time2, time3, time4;
+  double time1, time2(0), time3, time4(0);
   time1 = walkingTime;
-  //time2 = fmod(walkingTime + 0.25, 1.0);
   time3 = fmod(walkingTime + 0.5, 1.0);
-  //time4 = fmod(walkingTime + 0.75, 1.0);
-  // two legs walking
-  time2 = time1;
-  time4 = time3;
+  switch(walkType) {
+  case WALK_ONE_BY_ONE: {
+    time2 = fmod(walkingTime + 0.25, 1.0);
+    time4 = fmod(walkingTime + 0.75, 1.0);
+    break;
+  }
+  case WALK_TWO_BY_TWO: {
+    time2 = time1;
+    time4 = time3;
+    break;
+  }
+  }
   double leftRearX, rightRearX, leftForeX, rightForeX;
   double leftRearZ, rightRearZ, leftForeZ, rightForeZ;
-  double leftStep, rightStep, latStep;
+  double leftStep, rightStep;
   leftStep  = stepLength * forwardOrder + stepLength * rotationOrder;
   rightStep = stepLength * forwardOrder - stepLength * rotationOrder;
   double totalOrder = abs(forwardOrder) + abs(rotationOrder);
@@ -94,8 +105,8 @@ void move(double t,
   rightForeX   = movePosX  (staticForeX   , time2, rightStep );
   rightForeZ   = movePosZ  (staticForeZ   , time2, stepHeight);
   // Applying positions
-  leftRearLeg.setFromIK (leftRearX , leftRearZ , staticPitch);
-  rightRearLeg.setFromIK(rightRearX, rightRearZ, staticPitch);
-  leftForeLeg.setFromIK (leftForeX , leftForeZ , staticPitch);
-  rightForeLeg.setFromIK(rightForeX, rightForeZ, staticPitch);
+  leftRearLeg.setFromIK (t, leftRearX , leftRearZ , staticPitch);
+  rightRearLeg.setFromIK(t, rightRearX, rightRearZ, staticPitch);
+  leftForeLeg.setFromIK (t, leftForeX , leftForeZ , staticPitch);
+  rightForeLeg.setFromIK(t, rightForeX, rightForeZ, staticPitch);
 }

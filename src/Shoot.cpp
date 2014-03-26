@@ -27,7 +27,7 @@ TERMINAL_PARAMETER_DOUBLE(shootFinalDX, "delta X at end of shoot",  160.0);
 TERMINAL_PARAMETER_DOUBLE(shootFinalDZ, "delta Z at end of shoot", - 15.0);
 
 
-void prepareShoot(double elapsedTime, int shootingSide)
+void prepareShoot(double time, double elapsedTime, int shootingSide)
 {
   double leftForeFootX = shootForeX;
   double leftForeFootZ = shootForeZ;
@@ -41,14 +41,14 @@ void prepareShoot(double elapsedTime, int shootingSide)
     rightForeFootX += shootPreparationDX;
     rightForeFootZ += shootPreparationDZ;
   }
-  leftRearLeg.setFromIK(shootRearX, shootRearZ);
-  rightRearLeg.setFromIK(shootRearX, shootRearZ);
-  leftForeLeg.setFromIK(leftForeFootX, leftForeFootZ);
-  rightForeLeg.setFromIK(rightForeFootX, rightForeFootZ);
-  setUniformLat(shootLatAngle);
+  leftRearLeg.setFromIK (time, shootRearX, shootRearZ);
+  rightRearLeg.setFromIK(time, shootRearX, shootRearZ);
+  leftForeLeg.setFromIK (time, leftForeFootX, leftForeFootZ);
+  rightForeLeg.setFromIK(time, rightForeFootX, rightForeFootZ);
+  setUniformLat(time, shootLatAngle);
 }
 
-void performShoot(double elapsedTime, int shootingSide)
+void performShoot(double time, double elapsedTime, int shootingSide)
 {
   double leftForeFootX = shootForeX;
   double leftForeFootZ = shootForeZ;
@@ -70,22 +70,22 @@ void performShoot(double elapsedTime, int shootingSide)
     rightForeFootX = shootFootX;
     rightForeFootZ = shootFootZ;
   }
-  leftRearLeg.setFromIK(shootRearX, shootRearZ);
-  rightRearLeg.setFromIK(shootRearX, shootRearZ);
-  leftForeLeg.setFromIK(leftForeFootX, leftForeFootZ);
-  rightForeLeg.setFromIK(rightForeFootX, rightForeFootZ);
-  setUniformLat(shootLatAngle);
+  leftRearLeg.setFromIK (time, shootRearX, shootRearZ);
+  rightRearLeg.setFromIK(time, shootRearX, shootRearZ);
+  leftForeLeg.setFromIK (time, leftForeFootX, leftForeFootZ);
+  rightForeLeg.setFromIK(time, rightForeFootX, rightForeFootZ);
+  setUniformLat(time, shootLatAngle);
 }
 
 int shoot(double time, double shootStart, int shootingSide)
 {
   double elapsedTime = time - shootStart;
   if (elapsedTime < shootPreparationTime) {
-    prepareShoot(elapsedTime, shootingSide);
+    prepareShoot(time, elapsedTime, shootingSide);
     return 0;
   }
   elapsedTime -= shootPreparationTime;
   if (elapsedTime > shootTime) return 1;
-  performShoot(elapsedTime, shootingSide);
+  performShoot(time, elapsedTime, shootingSide);
   return 0;
 }

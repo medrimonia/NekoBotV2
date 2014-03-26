@@ -6,6 +6,7 @@
 #include <dxl.h>
 #include <function.h>
 
+#include "ATR.hpp"
 #include "Interpolation.hpp"
 #include "NekobotMotors.hpp"
 #include "Shoot.hpp"
@@ -27,16 +28,21 @@ TERMINAL_PARAMETER_DOUBLE(initAvgZ, "Init avg Z",  150.0);
 
 
 TERMINAL_PARAMETER_DOUBLE(initLatAngle, "Init lat angle of legs", 10.0);
+TERMINAL_PARAMETER_DOUBLE(oscPeriod, "Init lat angle of legs", 1.0);
+TERMINAL_PARAMETER_DOUBLE(oscAmp, "Init lat angle of legs", 0.0);
 
 // States handling
 #define FREE_MOVE_STATE 0
 #define INIT_STATE      1
 #define WALK_STATE      2
 #define SHOOT_STATE     3
+#define ATR_STATE       4
 
 TERMINAL_PARAMETER_INT(state    , "Robot current state"   , 0);
 TERMINAL_PARAMETER_INT(prevState, "Robot previous state"  , 0);
 TERMINAL_PARAMETER_DOUBLE(lastStateChange, "Last state change"  , 0.0);
+TERMINAL_PARAMETER_DOUBLE(stateSmoothing,
+                          "Smooth time after state change [s]", 1.0);
 
 // -1 : Shooting from left
 // +1 : Shooting from right
@@ -62,15 +68,20 @@ void tick()
   if (prevState != state) lastStateChange = t;
 
   if (state == 0) {
-    if (prevState != 0) disableMotors();
+    //if (prevState != 0)
+    disableMotors();
     prevState = 0;
     return;
   }
-  if (prevState == 0) enableMotors();
+  if (state != prevState) {
+    startSmoothing(t, stateSmoothing);
+    enableMotors();
+  }
   switch(state) {
   case INIT_STATE: {
     //setPosture(initRearX, initRearZ, initForeX,initForeZ, initLatAngle);
-    setAllFromIK(initForeX, initRearX, initAvgZ, initPitch);
+    double dPitch = sin(t * M_PI * 2.0 / oscPeriod) * oscAmp;
+    setAllFromIK(t, initForeX, initRearX, initAvgZ, initPitch + dPitch);
     break;
   }
   case WALK_STATE: {
@@ -81,6 +92,11 @@ void tick()
     if (shoot(t, lastStateChange, shootingSide) == 1) {
       state = INIT_STATE;
     }
+    break;
+  }
+  case ATR_STATE: {
+    performATR(t, lastStateChange);
+    break;
   }
   }
   prevState = state;
