@@ -8,6 +8,10 @@
  * - -> nose pointing up
  */
 
+double computeRearZ(double avgZ, double pitch);
+
+double computeForeZ(double avgZ, double pitch);
+
 
 /* Compute an inverse kinematic for the fore leg according to the specified x
  * and z.

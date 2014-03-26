@@ -4,7 +4,7 @@
 
 #include <dxl.h>
 
-#define BACK_LENGTH 200.0//TODO check!!!
+#include "InverseKinematics.hpp"
 
 RearLeg rightRearLeg ( 2, false);
 RearLeg leftRearLeg(12, true);
@@ -27,8 +27,8 @@ void setPosture(double rearX, double rearZ, double foreX, double foreZ,
 void setAllFromIK(double foreX, double rearX, double avgZ,
                   double robotPitch)
 {
-  double foreZ = avgZ - sin(robotPitch * M_PI / 180) * BACK_LENGTH / 2.0;
-  double rearZ = avgZ + sin(robotPitch * M_PI / 180) * BACK_LENGTH / 2.0;
+  double foreZ = computeForeZ(avgZ, robotPitch);
+  double rearZ = computeRearZ(avgZ, robotPitch);
   leftRearLeg.setFromIK (rearX, rearZ, robotPitch);
   rightRearLeg.setFromIK(rearX, rearZ, robotPitch);
   leftForeLeg.setFromIK (foreX, foreZ, robotPitch);

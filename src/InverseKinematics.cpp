@@ -1,7 +1,6 @@
-#include <math.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 
 #include "InverseKinematics.hpp"
 #include "NekobotMotors.hpp"
@@ -36,6 +35,18 @@
  * x- : backward
  * z  : vertical distance (always positive)
  *****************************************************************************/
+
+#define BACK_LENGTH 201.0//TODO check exact size on model
+
+double computeRearZ(double avgZ, double pitch)
+{
+  return avgZ + sin(pitch * M_PI / 180) * BACK_LENGTH / 2.0;
+}
+
+double computeForeZ(double avgZ, double pitch)
+{
+  return avgZ - sin(pitch * M_PI / 180) * BACK_LENGTH / 2.0;
+}
 
 // Return the angle between 180 and -180
 double normalizeAngle(double angle){

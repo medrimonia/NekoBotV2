@@ -3,6 +3,7 @@
 #include <terminal.h>
 
 #include "Interpolation.hpp"
+#include "InverseKinematics.hpp"
 #include "NekobotMotors.hpp"
 
 // Move Parameters
@@ -58,21 +59,13 @@ double movePosZ(double staticZ, double time, double amplitude)
   return staticZ - zRatio * amplitude / 2.0;
 }
 
-//DEPRECATED 
-//double movePosLat(double staticLat, double time, double amplitude)
-//{
-//  double pos = staticLat;
-//  pos += walkingZ.getMod(time) * walkLatOffset;// step offset
-//  pos += walkingX.getMod(time) * amplitude / 2.0;// rotation
-//  return pos;
-//}
-
 void move(double t,
-          double staticRearX, double staticRearZ,
-          double staticForeX, double staticForeZ,
-          double staticLatAngle)
+          double staticForeX, double staticRearX,
+          double staticAvgZ, double staticPitch)
 {
   double walkingTime = fmod(t, walkPeriod) / walkPeriod;
+  double staticRearZ = computeRearZ(staticAvgZ, staticPitch);
+  double staticForeZ = computeForeZ(staticAvgZ, staticPitch);
   double time1, time2, time3, time4;
   time1 = walkingTime;
   //time2 = fmod(walkingTime + 0.25, 1.0);
@@ -83,7 +76,6 @@ void move(double t,
   time4 = time3;
   double leftRearX, rightRearX, leftForeX, rightForeX;
   double leftRearZ, rightRearZ, leftForeZ, rightForeZ;
-//  double leftRearLat, rightRearLat, leftForeLat, rightForeLat;
   double leftStep, rightStep, latStep;
   leftStep  = stepLength * forwardOrder + stepLength * rotationOrder;
   rightStep = stepLength * forwardOrder - stepLength * rotationOrder;
@@ -95,23 +87,15 @@ void move(double t,
   // Computing positions
   leftRearX    = movePosX  (staticRearX   , time1, leftStep  );
   leftRearZ    = movePosZ  (staticRearZ   , time1, stepHeight);
-//  leftRearLat  = movePosLat(staticLatAngle, time1, latStep   );
   rightRearX   = movePosX  (staticRearX   , time3, rightStep );
   rightRearZ   = movePosZ  (staticRearZ   , time3, stepHeight);
-//  rightRearLat = movePosLat(staticLatAngle, time3, latStep   );
   leftForeX    = movePosX  (staticForeX   , time4, leftStep  );
   leftForeZ    = movePosZ  (staticForeZ   , time4, stepHeight);
-//  leftForeLat  = movePosLat(staticLatAngle, time4, -latStep  );
   rightForeX   = movePosX  (staticForeX   , time2, rightStep );
   rightForeZ   = movePosZ  (staticForeZ   , time2, stepHeight);
-//  rightForeLat = movePosLat(staticLatAngle, time2, -latStep  );
   // Applying positions
-  leftRearLeg.setFromIK (leftRearX , leftRearZ );
-  rightRearLeg.setFromIK(rightRearX, rightRearZ);
-  leftForeLeg.setFromIK (leftForeX , leftForeZ );
-  rightForeLeg.setFromIK(rightForeX, rightForeZ);
-//  leftRearLeg.setLatAngle (leftRearLat );
-//  rightRearLeg.setLatAngle(rightRearLat);
-//  leftForeLeg.setLatAngle (leftForeLat );
-//  rightForeLeg.setLatAngle(rightForeLat);
+  leftRearLeg.setFromIK (leftRearX , leftRearZ , staticPitch);
+  rightRearLeg.setFromIK(rightRearX, rightRearZ, staticPitch);
+  leftForeLeg.setFromIK (leftForeX , leftForeZ , staticPitch);
+  rightForeLeg.setFromIK(rightForeX, rightForeZ, staticPitch);
 }

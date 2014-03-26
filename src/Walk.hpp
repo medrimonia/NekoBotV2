@@ -2,8 +2,6 @@
 #define WALK_HPP
 
 void move(double t,
-          double staticRearX, double staticRearZ,
-          double staticForeX, double staticForeZ,
-          double staticLatAngle);
-
+          double staticForeX, double staticRearX,
+          double staticZ, double staticPitch);
 #endif//WALK_HPP

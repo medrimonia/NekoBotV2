@@ -74,7 +74,7 @@ void tick()
     break;
   }
   case WALK_STATE: {
-    move(t, initRearX, initRearZ, initForeX, initForeZ, initLatAngle);
+    move(t, initForeX, initRearX, initAvgZ, initPitch);
     break;
   }
   case SHOOT_STATE: {
