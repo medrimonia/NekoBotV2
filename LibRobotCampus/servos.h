@@ -21,7 +21,7 @@
 /**
  * Max number of servos
  */
-#define SERVOS_MAX_NB 18
+#define SERVOS_MAX_NB 20
 
 /**
  * Timers parameters for output

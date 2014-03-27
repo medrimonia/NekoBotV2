@@ -32,11 +32,12 @@ TERMINAL_PARAMETER_DOUBLE(oscPeriod, "Init lat angle of legs", 1.0);
 TERMINAL_PARAMETER_DOUBLE(oscAmp, "Init lat angle of legs", 0.0);
 
 // States handling
-#define FREE_MOVE_STATE 0
-#define INIT_STATE      1
-#define WALK_STATE      2
-#define SHOOT_STATE     3
-#define ATR_STATE       4
+#define FREE_MOVE_STATE     0
+#define INIT_STATE          1
+#define WALK_STATE          2
+#define SHOOT_STATE         3
+#define ATR_STATE           4
+#define BACK_FROM_ATR_STATE 5
 
 TERMINAL_PARAMETER_INT(state    , "Robot current state"   , 0);
 TERMINAL_PARAMETER_INT(prevState, "Robot previous state"  , 0);
@@ -69,13 +70,11 @@ void tick()
 
   if (state == 0) {
     //if (prevState != 0)
-    disableMotors();
     prevState = 0;
     return;
   }
   if (state != prevState) {
     startSmoothing(t, stateSmoothing);
-    enableMotors();
   }
   switch(state) {
   case INIT_STATE: {
@@ -96,6 +95,10 @@ void tick()
   }
   case ATR_STATE: {
     performATR(t, lastStateChange);
+    break;
+  }
+  case BACK_FROM_ATR_STATE: {
+    backFromATR(t, lastStateChange);
     break;
   }
   }

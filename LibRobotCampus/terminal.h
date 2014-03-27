@@ -35,7 +35,7 @@ class TerminalIO : public Print
  * Maximum number of commands
  * which ca be registered
  */
-#define TERMINAL_MAX_COMMANDS 100
+#define TERMINAL_MAX_COMMANDS 500
 
 /**
  * The number of terminal bar step

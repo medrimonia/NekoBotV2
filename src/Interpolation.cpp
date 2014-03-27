@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdio>
 
-#define TEST_INTERPOLATION
+//#define TEST_INTERPOLATION
 
 double linearInterpolation(double src, double tar,
                            double elapsedTime, double transitionTime)

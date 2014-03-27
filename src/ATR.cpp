@@ -2,45 +2,25 @@
 
 #include <terminal.h>
 
+#include "Interpolation.hpp"
 #include "NekobotMotors.hpp"
 
-// EXP3
-TERMINAL_PARAMETER_DOUBLE(atrExp3Back2Humerus  , "",   70.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp3Humerus2Radius, "",   30.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp3Back2Femur    , "",  -83.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp3Femur2Tibia   , "",   0.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp3Tibia2Foot    , "",  -20.0);
-
-// EXP2
-TERMINAL_PARAMETER_DOUBLE(atrExp2Back2Humerus  , "",    5.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp2Humerus2Radius, "",   80.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp2Back2Femur    , "",  -83.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp2Femur2Tibia   , "",   0.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp2Tibia2Foot    , "",  -20.0);
-
-// EXP1
-TERMINAL_PARAMETER_DOUBLE(atrExp1Back2Humerus  , "",  -25.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp1Humerus2Radius, "",  120.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp1Back2Femur    , "",  -83.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp1Femur2Tibia   , "",   0.0);
-TERMINAL_PARAMETER_DOUBLE(atrExp1Tibia2Foot    , "",  -20.0);
-
 // FINAL
-TERMINAL_PARAMETER_DOUBLE(atrBack2Humerus  , "",  -56.0);
-TERMINAL_PARAMETER_DOUBLE(atrHumerus2Radius, "",  150.0);
-TERMINAL_PARAMETER_DOUBLE(atrBack2Femur    , "",  -83.0);
-TERMINAL_PARAMETER_DOUBLE(atrFemur2Tibia   , "",    0.0);
-TERMINAL_PARAMETER_DOUBLE(atrTibia2Foot    , "",  -20.0);
+TERMINAL_PARAMETER_DOUBLE(atrFinalBack2Humerus  , "",  -56.0);
+TERMINAL_PARAMETER_DOUBLE(atrFinalHumerus2Radius, "",  150.0);
+TERMINAL_PARAMETER_DOUBLE(atrFinalBack2Femur    , "",  -90.0);
+TERMINAL_PARAMETER_DOUBLE(atrFinalFemur2Tibia   , "",    0.0);
+TERMINAL_PARAMETER_DOUBLE(atrFinalTibia2Foot    , "",  -20.0);
 
 // STEP3
-TERMINAL_PARAMETER_DOUBLE(atrS3Back2Humerus  , "",  -51.0);
+TERMINAL_PARAMETER_DOUBLE(atrS3Back2Humerus  , "",  -53.0);
 TERMINAL_PARAMETER_DOUBLE(atrS3Humerus2Radius, "",  150.0);
 TERMINAL_PARAMETER_DOUBLE(atrS3Back2Femur    , "",  -70.0);
 TERMINAL_PARAMETER_DOUBLE(atrS3Femur2Tibia   , "",   0.0);
 TERMINAL_PARAMETER_DOUBLE(atrS3Tibia2Foot    , "",  -20.0);
 
 // STEP 2
-TERMINAL_PARAMETER_DOUBLE(atrS2Back2Humerus  , "",  -30.0);
+TERMINAL_PARAMETER_DOUBLE(atrS2Back2Humerus  , "",  -40.0);
 TERMINAL_PARAMETER_DOUBLE(atrS2Humerus2Radius, "",  150.0);
 TERMINAL_PARAMETER_DOUBLE(atrS2Back2Femur    , "",    0.0);
 TERMINAL_PARAMETER_DOUBLE(atrS2Femur2Tibia   , "",    0.0);
@@ -59,6 +39,27 @@ TERMINAL_PARAMETER_DOUBLE(atrInitRearX, "Initial IK posture",    0.0);
 TERMINAL_PARAMETER_DOUBLE(atrInitAvgZ , "Initial IK posture",  130.0);
 TERMINAL_PARAMETER_DOUBLE(atrInitPitch, "Initial IK posture", - 20.0);
 
+// BACK 1
+TERMINAL_PARAMETER_DOUBLE(atrB1Back2Humerus  , "",  -45.0);
+TERMINAL_PARAMETER_DOUBLE(atrB1Humerus2Radius, "",  150.0);
+TERMINAL_PARAMETER_DOUBLE(atrB1Back2Femur    , "",  -50.0);
+TERMINAL_PARAMETER_DOUBLE(atrB1Femur2Tibia   , "",    0.0);
+TERMINAL_PARAMETER_DOUBLE(atrB1Tibia2Foot    , "",  -20.0);
+
+// BACK 2
+TERMINAL_PARAMETER_DOUBLE(atrB2Back2Humerus  , "",  -40.0);
+TERMINAL_PARAMETER_DOUBLE(atrB2Humerus2Radius, "",  150.0);
+TERMINAL_PARAMETER_DOUBLE(atrB2Back2Femur    , "",    0.0);
+TERMINAL_PARAMETER_DOUBLE(atrB2Femur2Tibia   , "",    0.0);
+TERMINAL_PARAMETER_DOUBLE(atrB2Tibia2Foot    , "",  -20.0);
+
+// BACK 3
+TERMINAL_PARAMETER_DOUBLE(atrB3Back2Humerus  , "",  -50.0);
+TERMINAL_PARAMETER_DOUBLE(atrB3Humerus2Radius, "",  150.0);
+TERMINAL_PARAMETER_DOUBLE(atrB3Back2Femur    , "",   40.0);
+TERMINAL_PARAMETER_DOUBLE(atrB3Femur2Tibia   , "",  -50.0);
+TERMINAL_PARAMETER_DOUBLE(atrB3Tibia2Foot    , "",  -20.0);
+
 TERMINAL_PARAMETER_INT(atrState, "Current Part of ATR", 0);
 
 #define ATR_STATE_INIT         0
@@ -66,20 +67,17 @@ TERMINAL_PARAMETER_INT(atrState, "Current Part of ATR", 0);
 #define ATR_STATE_STEP2        2
 #define ATR_STATE_STEP3        3
 #define ATR_STATE_FINAL        4
-#define ATR_STATE_EXP1         5
-#define ATR_STATE_EXP2         6
-#define ATR_STATE_EXP3         7
 
 
-TERMINAL_PARAMETER_DOUBLE(atrInitTime, "Time to init"     ,  1.0 );
-TERMINAL_PARAMETER_DOUBLE(atrPrepTime, "From init to prep",  0.25);
-TERMINAL_PARAMETER_DOUBLE(atrStabilizeTime, "On preparation state",  1.0);
-TERMINAL_PARAMETER_DOUBLE(atrS2Time, "From prep to S2",  2.5);
-TERMINAL_PARAMETER_DOUBLE(atrS3Time, "From S2 to S3",  3.5);
-TERMINAL_PARAMETER_DOUBLE(atrFinalTime, "From S3 to final",  1.5);
-TERMINAL_PARAMETER_DOUBLE(atrExp1Time, "From final to exp1",  2.5);
-TERMINAL_PARAMETER_DOUBLE(atrExp2Time, "From exp1 to exp2",  2.5);
-TERMINAL_PARAMETER_DOUBLE(atrExp3Time, "From exp2 to exp3",  3.5);
+TERMINAL_PARAMETER_DOUBLE(atrInitTime,      "Time to init"        ,  1.0 );
+TERMINAL_PARAMETER_DOUBLE(atrPrepTime,      "From init to prep"   ,  0.25);
+TERMINAL_PARAMETER_DOUBLE(atrStabilizeTime, "On preparation state",  1.0 );
+TERMINAL_PARAMETER_DOUBLE(atrS2Time,        "From prep to S2"     ,  1.5 );
+TERMINAL_PARAMETER_DOUBLE(atrS3Time,        "From S2 to S3"       ,  1.5 );
+TERMINAL_PARAMETER_DOUBLE(atrFinalTime,     "From S3 to final"    ,  1.0 );
+TERMINAL_PARAMETER_DOUBLE(atrB1Time,        "From Final to B1"    ,  2.5 );
+TERMINAL_PARAMETER_DOUBLE(atrB2Time,        "From B1 to B2"       ,  2.5 );
+TERMINAL_PARAMETER_DOUBLE(atrB3Time,        "From B1 to B2"       ,  2.5 );
 
 void initATR(double time)
 {
@@ -97,65 +95,18 @@ void setPrepATR(double time)
                 atrPrepBack2Femur, atrPrepFemur2Tibia, atrPrepTibia2Foot);
 }
 
-void setS2ATR(double time)
-{
-  if (atrState != ATR_STATE_STEP2) {
-    atrState = ATR_STATE_STEP2;
-    startSmoothing(time, atrS2Time);
-  }
-  setFromAngles(time, atrS2Back2Humerus, atrS2Humerus2Radius,
-                atrS2Back2Femur, atrS2Femur2Tibia, atrS2Tibia2Foot);
+#define REGISTER_ATR_POS(idx, prefix, time)              \
+{                                                        \
+  atrBack2Humerus  [idx] =  prefix ## Back2Humerus;      \
+  atrHumerus2Radius[idx] =  prefix ## Humerus2Radius;    \
+  atrBack2Femur    [idx] =  prefix ## Back2Femur;        \
+  atrFemur2Tibia   [idx] =  prefix ## Femur2Tibia;       \
+  atrTibia2Foot    [idx] =  prefix ## Tibia2Foot;        \
+  timing [idx] = time;                                   \
 }
 
-void setS3ATR(double time)
-{
-  if (atrState != ATR_STATE_STEP3) {
-    atrState = ATR_STATE_STEP3;
-    startSmoothing(time, atrS3Time);
-  }
-  setFromAngles(time, atrS3Back2Humerus, atrS3Humerus2Radius,
-                atrS3Back2Femur, atrS3Femur2Tibia, atrS3Tibia2Foot);
-}
-
-void setFinalATR(double time)
-{
-  if (atrState != ATR_STATE_FINAL) {
-    atrState = ATR_STATE_FINAL;
-    startSmoothing(time, atrFinalTime);
-  }
-  setFromAngles(time, atrBack2Humerus, atrHumerus2Radius,
-                atrBack2Femur, atrFemur2Tibia, atrTibia2Foot);
-}
-
-void setExp1ATR(double time)
-{
-  if (atrState != ATR_STATE_EXP1) {
-    atrState = ATR_STATE_EXP1;
-    startSmoothing(time, atrExp1Time);
-  }
-  setFromAngles(time, atrExp1Back2Humerus, atrExp1Humerus2Radius,
-                atrExp1Back2Femur, atrExp1Femur2Tibia, atrExp1Tibia2Foot);
-}
-
-void setExp2ATR(double time)
-{
-  if (atrState != ATR_STATE_EXP2) {
-    atrState = ATR_STATE_EXP2;
-    startSmoothing(time, atrExp2Time);
-  }
-  setFromAngles(time, atrExp2Back2Humerus, atrExp2Humerus2Radius,
-                atrExp2Back2Femur, atrExp2Femur2Tibia, atrExp2Tibia2Foot);
-}
-
-void setExp3ATR(double time)
-{
-  if (atrState != ATR_STATE_EXP3) {
-    atrState = ATR_STATE_EXP3;
-    startSmoothing(time, atrExp3Time);
-  }
-  setFromAngles(time, atrExp3Back2Humerus, atrExp3Humerus2Radius,
-                atrExp3Back2Femur, atrExp3Femur2Tibia, atrExp3Tibia2Foot);
-}
+#define CALC_ATR_POS(time, suffix)                                \
+  cubicInterpolation(time, timing, atr ## suffix, 4, 0.0, 0.0)
 
 void performATR(double time, double startTime)
 {
@@ -169,38 +120,47 @@ void performATR(double time, double startTime)
     setPrepATR(time);
     return;
   }
-  elapsedTime -= atrPrepTime;
-  if (elapsedTime < atrS2Time) {
-    setS2ATR(time);
-    return;
-  }
-  elapsedTime -= atrS2Time;
-  if (elapsedTime < atrS3Time) {
-    setS3ATR(time);
-    return;
-  }
-  elapsedTime -= atrS3Time;
-  setFinalATR(time);
-// DANGER ZONE !
-  if (elapsedTime < atrFinalTime) {
-    setFinalATR(time);
-    return;
-  }
-  elapsedTime -= atrFinalTime;
-  if (elapsedTime < atrExp1Time) {
-    setExp1ATR(time);
-    return;
-  }
-  elapsedTime -= atrExp1Time;
-  if (elapsedTime < atrExp2Time) {
-    setExp2ATR(time);
-    return;
-  }
-  elapsedTime -= atrExp2Time;
-  setExp3ATR(time);
+  elapsedTime -= atrPrepTime + atrStabilizeTime;
+  double atrBack2Humerus  [4];
+  double atrHumerus2Radius[4];
+  double atrBack2Femur    [4];
+  double atrFemur2Tibia   [4];
+  double atrTibia2Foot    [4];
+  double timing           [4];
+  REGISTER_ATR_POS(0, atrPrep ,  0);
+  REGISTER_ATR_POS(1, atrS2   ,  atrS2Time);
+  REGISTER_ATR_POS(2, atrS3   ,  atrS2Time + atrS3Time);
+  REGISTER_ATR_POS(3, atrFinal,  atrS2Time + atrS3Time + atrFinalTime);
+  setFromAngles(time,
+                CALC_ATR_POS(elapsedTime, Back2Humerus  ),
+                CALC_ATR_POS(elapsedTime, Humerus2Radius),
+                CALC_ATR_POS(elapsedTime, Back2Femur    ),
+                CALC_ATR_POS(elapsedTime, Femur2Tibia   ),
+                CALC_ATR_POS(elapsedTime, Tibia2Foot    ));
 }
 
-void backFromAtr(double time, double startTime)
+void backFromATR(double time, double startTime)
 {
-  double totalATRTime = atrInitTime
+  double elapsedTime = time - startTime;
+  double totalTime = atrB1Time + atrB2Time + atrB3Time;
+  if (elapsedTime > totalTime) {
+    elapsedTime = totalTime;
+  }
+  double atrBack2Humerus  [4];
+  double atrHumerus2Radius[4];
+  double atrBack2Femur    [4];
+  double atrFemur2Tibia   [4];
+  double atrTibia2Foot    [4];
+  double timing           [4];
+  REGISTER_ATR_POS(0, atrFinal ,  0);
+  REGISTER_ATR_POS(1, atrB1   ,  atrB1Time);
+  REGISTER_ATR_POS(2, atrB2   ,  atrB1Time + atrB2Time);
+  REGISTER_ATR_POS(2, atrB3   ,  atrB1Time + atrB2Time +atrB3Time);
+  setFromAngles(time,
+                CALC_ATR_POS(elapsedTime, Back2Humerus  ),
+                CALC_ATR_POS(elapsedTime, Humerus2Radius),
+                CALC_ATR_POS(elapsedTime, Back2Femur    ),
+                CALC_ATR_POS(elapsedTime, Femur2Tibia   ),
+                CALC_ATR_POS(elapsedTime, Tibia2Foot    ));
+  
 }

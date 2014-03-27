@@ -26,10 +26,6 @@ extern ForeLeg leftForeLeg;
 
 void initMotors();
 
-void enableMotors();
-
-void disableMotors();
-
 void startSmoothing(double time, double smoothingLength);
 
 void smoothSet(int id, double src, double tar,

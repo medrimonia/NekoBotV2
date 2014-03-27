@@ -83,22 +83,6 @@ void motSetMinMax(int id, double min, double max, bool inverted)
   dxl_set_min_max(id, trueMin, trueMax);
 }
 
-void enableMotors()
-{
-  leftRearLeg.enable();
-  rightRearLeg.enable();
-  leftForeLeg.enable();
-  rightForeLeg.enable();
-}
-
-void disableMotors()
-{
-  leftRearLeg.disable();
-  rightRearLeg.disable();
-  leftForeLeg.disable();
-  rightForeLeg.disable();
-}
-
 void setUniformLat(double time, double latAngle)
 {
   leftRearLeg.setLatAngle (time, latAngle);
