@@ -34,11 +34,15 @@ void cubicInterpolation(double y0, double y1, double dy0, double dy1,
   a[3] = y0;
 }
 
+void cubicInterpolation(double x0, double y0, double x1, double y1,
+                        double dy0, double dy1, double * a)
+{
+  double dx = x1 - x0;
+  double offset = x0;
+  cubicInterpolation(y0, y1, dy0, dy1, a);
+  normalizeCubicFunction(a, dx, offset);
+}
 
-/**
- * Dilate time of the parameters by timeUnit and then add a time offset of
- * offset to a cubic function parameters
- */
 void normalizeCubicFunction(double * a, double timeUnit, double offset)
 {
   //Dilate time
@@ -66,15 +70,38 @@ void displayCubicFunction(const char * header, double * a)
 
 void cubicInterpolation(double * x, double * y, double * a)
 {
-  // Solve the case for a function centered in 0
-  double offset = x[1];
-  double dx = x[2] - x[1];
-  double y0 = y[1];
-  double y1 = y[2];
   double dy0 = (y[2] - y[0]) / (x[2] - x[0]);
   double dy1 = (y[3] - y[1]) / (x[3] - x[1]);
-  cubicInterpolation(y0, y1, dy0, dy1, a);
-  normalizeCubicFunction(a, dx, offset);
+  cubicInterpolation(x[1], y[1], x[2], y[2], dy0, dy1, a);
+}
+
+
+//TODO add acyclic
+double cubicInterpolation(double time, double * x, double * y, int nbPoints,
+                          double initDy, double endDy)
+{
+  int index = 0;
+  // Placing in a point such as x[index - 1] < time and x[index] >= time
+  while (index < nbPoints) {
+    if (x[index] >= time)
+      break;
+    index++;
+  }
+  //Special case, x > end | x < start
+  if (index == 0) return y[0];
+  if (index == nbPoints) return y[nbPoints -1];
+  double dy0 = initDy;
+  double dy1 = endDy;
+  // Point available at start
+  if (index >= 2) {
+    dy0 = (y[index] - y[index - 2]) / (x[index] - x[index - 2]);
+  }
+  if (index < nbPoints - 1) {
+    dy1 = (y[index + 1] - y[index - 1]) / (x[index + 1] - x[index - 1]);
+  }
+  double a[4];
+  cubicInterpolation(x[index-1], y[index-1],x[index], y[index], dy0, dy1, a);
+  return evalCubicFunction(a, time);  
 }
 
 double evalCubicFunction(double * a, double x)
