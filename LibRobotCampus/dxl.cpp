@@ -24,6 +24,7 @@ void dxl_init_configs()
         dxl_configs[id].zero = 0.0;
         dxl_configs[id].min = -150;
         dxl_configs[id].max = 150;
+        dxl_configs[id].dirty = false;
     }
 }
 
@@ -139,12 +140,14 @@ void dxl_init(int baudrate)
 
 void dxl_write(ui8 *buffer, int n)
 {
+#if defined(DXL_AVAILABLE)
     digitalWrite(DXL_DIRECTION, HIGH); // TX
     asm("nop");
     DXL_DEVICE.write(buffer, n);
     DXL_DEVICE.waitDataToBeSent();
     asm("nop");
     digitalWrite(DXL_DIRECTION, LOW); // RX
+#endif
 }
 
 // Sends a packet to the dynamixel bus
@@ -193,17 +196,20 @@ struct dxl_packet *dxl_send_reply(struct dxl_packet *request)
 // Tick, reading the incoming packet from the dynamixel device
 void dxl_tick()
 {
+#if defined(DXL_AVAILABLE)
     if (initialized) {
         while (DXL_DEVICE.available()) {
             ui8 c = DXL_DEVICE.read();
             dxl_packet_push_byte(&incoming_packet, c);
         }
     }
+#endif
 }
 
 // Forwarding USB to Dynamixel
 void dxl_forward()
 {
+#if defined(DXL_AVAILABLE)
     while (true && initialized) {
         // struct dxl_packet current_packet;
 
@@ -240,6 +246,7 @@ void dxl_forward()
             dxl_write(buffer, n);
         }
     }
+#endif
 }
 
 // Pings a servo and returns true if it's alive
@@ -283,7 +290,9 @@ void dxl_write_word(ui8 id, ui8 addr, int value)
     dxl_write(id, addr, (char*)buffer, sizeof(buffer));
 }
 
-void dxl_set_position(ui8 id, float position)
+static volatile bool dxl_is_async = false;
+
+static int dxl_order_to_value(ui8 id, float position)
 {
     if (id < DXL_MAX_ID && id != 0) {
         struct dxl_config *config = &dxl_configs[id-1];
@@ -292,7 +301,57 @@ void dxl_set_position(ui8 id, float position)
         if (position > config->max) position = config->max;
     }
 
-    dxl_write_word(id, DXL_GOAL_POSITION, dxl_position_to_value(id, position));
+    return dxl_position_to_value(id, position);
+}
+
+void dxl_async(bool async)
+{
+    dxl_is_async = async;
+}
+
+void dxl_flush()
+{
+    bool hasDirty = true;
+
+    while (hasDirty) {
+        hasDirty = false;
+        struct dxl_packet request;
+        int n = 0;
+
+        for (ui8 id=1; id<=DXL_MAX_ID && n<10; id++) {
+            struct dxl_config *config = &dxl_configs[id-1];
+            if (config->dirty) {
+                hasDirty = true;
+                config->dirty = false;
+                request.parameters[3*n+2] = id;
+                request.parameters[3*n+3] = config->position&0xff;
+                request.parameters[3*n+4] = (config->position>>8)&0xff;
+                n++;
+            }
+        }
+
+        request.id = DXL_BROADCAST;
+        request.instruction = DXL_CMD_SYNC_WRITE;
+        request.parameter_nb = 2+3*n;
+        request.parameters[0] = DXL_GOAL_POSITION;
+        request.parameters[1] = 2;
+
+        dxl_send(&request);
+    }
+}
+
+void dxl_set_position(ui8 id, float position)
+{
+    int value = dxl_order_to_value(id, position);
+    if (dxl_is_async) { // Send it later
+        if (id < DXL_MAX_ID && id != 0) {
+            struct dxl_config *config = &dxl_configs[id-1];
+            config->position = value;
+            config->dirty = true;
+        }
+    } else { // Do it now
+        dxl_write_word(id, DXL_GOAL_POSITION, value);
+    }
 }
 
 void dxl_disable(ui8 id)
