@@ -5,6 +5,10 @@
 #include "Interpolation.hpp"
 #include "NekobotMotors.hpp"
 
+// TODO : Ideally, a balance should be added for the second phase.
+// Balancing the robot might be achieved by reacting to the Back2Humerus error
+// with Back2Femur
+
 // FINAL
 TERMINAL_PARAMETER_DOUBLE(atrFinalBack2Humerus  , "",  -56.0);
 TERMINAL_PARAMETER_DOUBLE(atrFinalHumerus2Radius, "",  150.0);
