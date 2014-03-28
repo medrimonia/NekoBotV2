@@ -3,15 +3,15 @@
 #include <terminal.h>
 
 #include "Interpolation.hpp"
+#include "InverseKinematics.hpp"
 #include "NekobotMotors.hpp"
 
 // STATIC POSITION
-//rear IK shoot
-TERMINAL_PARAMETER_DOUBLE(shootRearX, "Shoot X of rear foots",   22.0);
-TERMINAL_PARAMETER_DOUBLE(shootRearZ, "Shoot Z of rear foots",  170.0);
-//fore IK shoot
-TERMINAL_PARAMETER_DOUBLE(shootForeX, "Shoot X of fore foots",  -20.0);
-TERMINAL_PARAMETER_DOUBLE(shootForeZ, "Shoot Z of fore foots",  170.0);
+//IK shoot
+TERMINAL_PARAMETER_DOUBLE(shootRearX, "",   22.0);
+TERMINAL_PARAMETER_DOUBLE(shootForeX, "",  -20.0);
+TERMINAL_PARAMETER_DOUBLE(shootAvgZ , "",  140.0);
+TERMINAL_PARAMETER_DOUBLE(shootPitch, "",  -10.0);
 
 TERMINAL_PARAMETER_DOUBLE(shootLatAngle, "Shoot lat angle of legs", 12.0);
 
@@ -29,6 +29,8 @@ TERMINAL_PARAMETER_DOUBLE(shootFinalDZ, "delta Z at end of shoot", - 15.0);
 
 void prepareShoot(double time, double elapsedTime, int shootingSide)
 {
+  double shootForeZ = computeForeZ(shootAvgZ, shootPitch);
+  double shootRearZ = computeRearZ(shootAvgZ, shootPitch);
   double leftForeFootX = shootForeX;
   double leftForeFootZ = shootForeZ;
   double rightForeFootX = shootForeX;
@@ -50,6 +52,8 @@ void prepareShoot(double time, double elapsedTime, int shootingSide)
 
 void performShoot(double time, double elapsedTime, int shootingSide)
 {
+  double shootForeZ = computeForeZ(shootAvgZ, shootPitch);
+  double shootRearZ = computeRearZ(shootAvgZ, shootPitch);
   double leftForeFootX = shootForeX;
   double leftForeFootZ = shootForeZ;
   double rightForeFootX = shootForeX;
@@ -74,7 +78,6 @@ void performShoot(double time, double elapsedTime, int shootingSide)
   rightRearLeg.setFromIK(time, shootRearX, shootRearZ);
   leftForeLeg.setFromIK (time, leftForeFootX, leftForeFootZ);
   rightForeLeg.setFromIK(time, rightForeFootX, rightForeFootZ);
-  setUniformLat(time, shootLatAngle);
 }
 
 int shoot(double time, double shootStart, int shootingSide)

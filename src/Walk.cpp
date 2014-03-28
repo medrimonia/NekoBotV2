@@ -7,22 +7,20 @@
 #include "NekobotMotors.hpp"
 
 // Move Parameters
-TERMINAL_PARAMETER_DOUBLE(forwardOrder , "ratio of forward Order",  0.0);
-TERMINAL_PARAMETER_DOUBLE(rotationOrder, "ratio of rotation Order",  0.0);
+TERMINAL_PARAMETER_DOUBLE(forwardOrder , "[-1, 1]",  0.0);
+TERMINAL_PARAMETER_DOUBLE(rotationOrder, "[-1, 1]",  0.0);
 
 // Duration parameters
-TERMINAL_PARAMETER_DOUBLE(walkPeriod,   "Duration of a full step"   ,  2.0);
-TERMINAL_PARAMETER_DOUBLE(stepDuration, "Foot out of ground (ratio)",  0.2);
+// When walkPeriod is big, stepDuration must be small
+TERMINAL_PARAMETER_DOUBLE(walkPeriod,   "Duration of a full step"   ,  0.5);
+TERMINAL_PARAMETER_DOUBLE(stepDuration, "Foot out of ground (ratio)",  0.37);
 
 // Amplitude parameters
-TERMINAL_PARAMETER_DOUBLE(stepHeight, "Height of a step"              , 80.0);
-TERMINAL_PARAMETER_DOUBLE(stepLength, "Length of a step"              ,100.0);
-TERMINAL_PARAMETER_DOUBLE(stepLatAmp, "Amplitude of a step (rotation)",  5.0);
+TERMINAL_PARAMETER_DOUBLE(stepHeight, "Height of a step",  80.0);
+TERMINAL_PARAMETER_DOUBLE(stepLength, "Length of a step", 100.0);
 
-TERMINAL_PARAMETER_DOUBLE(walkLatOffset, "Walking lateral offset"  ,-10.0);
-
+/* Different walking types */
 TERMINAL_PARAMETER_INT(walkType, "Way of walking (2 legs / 1 legs)", 1);
-
 #define WALK_ONE_BY_ONE 0
 #define WALK_TWO_BY_TWO 1
 
